@@ -7,8 +7,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.benoitlefevre.monbudget.database.db.BudgetDatabase
 import com.benoitlefevre.monbudget.database.models.Account
 import com.benoitlefevre.monbudget.database.models.CurrentAmount
-import com.benoitlefevre.monbudget.getOrAwaitValue
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -66,7 +66,7 @@ class CurrentAmountDaoTest {
         currentAmountDao.insertCurrentAmount(currentAmount1)
         currentAmountDao.insertCurrentAmount(currentAmount2)
 
-        val currentAmounts = currentAmountDao.getAllCurrentAmount().getOrAwaitValue()
+        val currentAmounts = currentAmountDao.getAllCurrentAmount().first().toList()
         assertThat(currentAmounts.size).isEqualTo(2)
         assertThat(currentAmounts).contains(currentAmount1)
         assertThat(currentAmounts).contains(currentAmount2)
@@ -83,23 +83,23 @@ class CurrentAmountDaoTest {
         currentAmountDao.insertCurrentAmount(currentAmount3)
 
         var currentAmounts =
-            currentAmountDao.getCurrentAmountByPeriod(date3, date1).getOrAwaitValue()
+            currentAmountDao.getCurrentAmountByPeriod(date3, date1).first().toList()
         assertThat(currentAmounts.size).isEqualTo(3)
         assertThat(currentAmounts).contains(currentAmount1)
         assertThat(currentAmounts).contains(currentAmount2)
         assertThat(currentAmounts).contains(currentAmount3)
 
-        currentAmounts = currentAmountDao.getCurrentAmountByPeriod(date2, date1).getOrAwaitValue()
+        currentAmounts = currentAmountDao.getCurrentAmountByPeriod(date2, date1).first().toList()
         assertThat(currentAmounts.size).isEqualTo(2)
         assertThat(currentAmounts).contains(currentAmount1)
         assertThat(currentAmounts).contains(currentAmount2)
 
-        currentAmounts = currentAmountDao.getCurrentAmountByPeriod(date3, date2).getOrAwaitValue()
+        currentAmounts = currentAmountDao.getCurrentAmountByPeriod(date3, date2).first().toList()
         assertThat(currentAmounts.size).isEqualTo(2)
         assertThat(currentAmounts).contains(currentAmount2)
         assertThat(currentAmounts).contains(currentAmount3)
 
-        currentAmounts = currentAmountDao.getCurrentAmountByPeriod(date1, date1).getOrAwaitValue()
+        currentAmounts = currentAmountDao.getCurrentAmountByPeriod(date1, date1).first().toList()
         assertThat(currentAmounts.size).isEqualTo(1)
         assertThat(currentAmounts).contains(currentAmount1)
     }
@@ -114,11 +114,11 @@ class CurrentAmountDaoTest {
         currentAmountDao.insertCurrentAmount(currentAmount2)
         currentAmountDao.insertCurrentAmount(currentAmount3)
 
-        var currentAmounts = currentAmountDao.getAllCurrentAmountByAccountId(1).getOrAwaitValue()
+        var currentAmounts = currentAmountDao.getAllCurrentAmountByAccountId(1).first().toList()
         assertThat(currentAmounts.size).isEqualTo(1)
         assertThat(currentAmounts).contains(currentAmount1)
 
-        currentAmounts = currentAmountDao.getAllCurrentAmountByAccountId(2).getOrAwaitValue()
+        currentAmounts = currentAmountDao.getAllCurrentAmountByAccountId(2).first().toList()
         assertThat(currentAmounts.size).isEqualTo(2)
         assertThat(currentAmounts).contains(currentAmount2)
         assertThat(currentAmounts).contains(currentAmount3)
@@ -132,7 +132,7 @@ class CurrentAmountDaoTest {
         currentAmountDao.insertCurrentAmount(currentAmount1)
         currentAmountDao.insertCurrentAmount(currentAmount2)
 
-        val currentAmount = currentAmountDao.getCurrentAmountById(1).getOrAwaitValue()
+        val currentAmount = currentAmountDao.getCurrentAmountById(1).first()
         assertThat(currentAmount).isEqualTo(currentAmount1)
     }
 
@@ -147,12 +147,12 @@ class CurrentAmountDaoTest {
         currentAmountDao.insertCurrentAmount(currentAmount3)
 
         currentAmountDao.deleteCurrentAmountByPeriod(date3,date2)
-        var currentAmounts = currentAmountDao.getAllCurrentAmount().getOrAwaitValue()
+        var currentAmounts = currentAmountDao.getAllCurrentAmount().first().toList()
         assertThat(currentAmounts.size).isEqualTo(1)
         assertThat(currentAmounts).contains(currentAmount1)
 
         currentAmountDao.deleteCurrentAmountByPeriod(date1,date1)
-        currentAmounts = currentAmountDao.getAllCurrentAmount().getOrAwaitValue()
+        currentAmounts = currentAmountDao.getAllCurrentAmount().first().toList()
         assertThat(currentAmounts).isEmpty()
     }
 
@@ -166,12 +166,12 @@ class CurrentAmountDaoTest {
         currentAmountDao.insertCurrentAmount(currentAmount2)
         currentAmountDao.insertCurrentAmount(currentAmount3)
 
-        var currentAmounts = currentAmountDao.getAllCurrentAmount().getOrAwaitValue()
+        var currentAmounts = currentAmountDao.getAllCurrentAmount().first().toList()
         assertThat(currentAmounts.size).isEqualTo(3)
 
         currentAmountDao.deleteCurrentAmountById(1)
 
-        currentAmounts = currentAmountDao.getAllCurrentAmount().getOrAwaitValue()
+        currentAmounts = currentAmountDao.getAllCurrentAmount().first().toList()
         assertThat(currentAmounts.size).isEqualTo(2)
         assertThat(currentAmounts).doesNotContain(currentAmount1)
     }
@@ -186,12 +186,12 @@ class CurrentAmountDaoTest {
         currentAmountDao.insertCurrentAmount(currentAmount2)
         currentAmountDao.insertCurrentAmount(currentAmount3)
 
-        var currentAmounts = currentAmountDao.getAllCurrentAmount().getOrAwaitValue()
+        var currentAmounts = currentAmountDao.getAllCurrentAmount().first().toList()
         assertThat(currentAmounts.size).isEqualTo(3)
 
         currentAmountDao.deleteCurrentAmountByAccountId(2)
 
-        currentAmounts = currentAmountDao.getAllCurrentAmount().getOrAwaitValue()
+        currentAmounts = currentAmountDao.getAllCurrentAmount().first().toList()
         assertThat(currentAmounts.size).isEqualTo(1)
         assertThat(currentAmounts).doesNotContain(currentAmount2)
         assertThat(currentAmounts).doesNotContain(currentAmount3)

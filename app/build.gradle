@@ -68,10 +68,10 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
 //    Koin AndroidX
-    def koin_version = "2.1.5"
+    def koin_version = "2.2.2"
     implementation "org.koin:koin-androidx-scope:$koin_version"
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
-    androidTestImplementation "org.koin:koin-test:$koin_version"
+    debugImplementation "org.koin:koin-test:$koin_version"
 
 //    Room
     def room_version = '2.2.6'
