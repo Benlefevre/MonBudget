@@ -9,8 +9,8 @@ import com.benoitlefevre.monbudget.database.models.Account
 import com.benoitlefevre.monbudget.database.models.Expense
 import com.benoitlefevre.monbudget.database.models.ExpenseType
 import com.benoitlefevre.monbudget.database.models.Recurrence
-import com.benoitlefevre.monbudget.getOrAwaitValue
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -113,7 +113,7 @@ class ExpenseDaoTest {
         expenseDao.insertExpense(expense4)
         expenseDao.insertExpense(expense5)
 
-        val expenses = budgetDb.expenseDao().getAllExpenses().getOrAwaitValue()
+        val expenses = budgetDb.expenseDao().getAllExpenses().first().toList()
         assertThat(expenses.size).isEqualTo(5)
         assertThat(expenses).contains(expense1)
         assertThat(expenses).contains(expense2)
@@ -126,7 +126,7 @@ class ExpenseDaoTest {
     fun getExpenseById_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expense = expenseDao.getExpenseById(1).getOrAwaitValue()
+        val expense = expenseDao.getExpenseById(1).first()
         assertThat(expense).isEqualTo(expenseList[0])
     }
 
@@ -134,14 +134,14 @@ class ExpenseDaoTest {
     fun getExpenseByPeriod_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        var expenses = expenseDao.getExpensesByPeriod(date3, date1).getOrAwaitValue()
+        var expenses = expenseDao.getExpensesByPeriod(date3, date1).first().toList()
         assertThat(expenses.size).isEqualTo(5)
         assertThat(expenses).contains(expenseList[0])
         assertThat(expenses).contains(expenseList[1])
         assertThat(expenses).contains(expenseList[2])
         assertThat(expenses).contains(expenseList[3])
 
-        expenses = expenseDao.getExpensesByPeriod(date2, date2).getOrAwaitValue()
+        expenses = expenseDao.getExpensesByPeriod(date2, date2).first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[1])
         assertThat(expenses).contains(expenseList[2])
@@ -153,7 +153,7 @@ class ExpenseDaoTest {
     fun getExpenseByAccount_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getExpenseByAccount(1).getOrAwaitValue()
+        val expenses = expenseDao.getExpenseByAccount(1).first().toList()
         assertThat(expenses.size).isEqualTo(3)
         assertThat(expenses).contains(expenseList[0])
         assertThat(expenses).contains(expenseList[1])
@@ -166,7 +166,7 @@ class ExpenseDaoTest {
     fun getExpenseByAccountAndPeriod_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getExpenseByAccountAndPeriod(1, date3, date2).getOrAwaitValue()
+        val expenses = expenseDao.getExpenseByAccountAndPeriod(1, date3, date2).first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[1])
         assertThat(expenses).contains(expenseList[3])
@@ -179,7 +179,7 @@ class ExpenseDaoTest {
     fun getExpenseByAmount_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getExpenseByAmount(30F, 40F).getOrAwaitValue()
+        val expenses = expenseDao.getExpenseByAmount(30F, 40F).first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[0])
         assertThat(expenses).contains(expenseList[1])
@@ -190,10 +190,10 @@ class ExpenseDaoTest {
         expenseDao.insertAllExpenses(expenseList)
 
         var expenses =
-            expenseDao.getExpenseByPeriodAndAmount(90F, 100F, date1, date1).getOrAwaitValue()
+            expenseDao.getExpenseByPeriodAndAmount(90F, 100F, date1, date1).first().toList()
         assertThat(expenses).isEmpty()
 
-        expenses = expenseDao.getExpenseByPeriodAndAmount(30F, 50F, date3, date2).getOrAwaitValue()
+        expenses = expenseDao.getExpenseByPeriodAndAmount(30F, 50F, date3, date2).first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[1])
         assertThat(expenses).contains(expenseList[2])
@@ -204,11 +204,11 @@ class ExpenseDaoTest {
     fun getExpenseByType_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        var expenses = expenseDao.getExpenseByExpenseType(ExpenseType.NONE).getOrAwaitValue()
+        var expenses = expenseDao.getExpenseByExpenseType(ExpenseType.NONE).first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[0])
 
-        expenses = expenseDao.getExpenseByExpenseType(ExpenseType.FOOD).getOrAwaitValue()
+        expenses = expenseDao.getExpenseByExpenseType(ExpenseType.FOOD).first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[1])
     }
@@ -218,11 +218,11 @@ class ExpenseDaoTest {
         expenseDao.insertAllExpenses(expenseList)
 
         var expenses = expenseDao.getExpenseByPeriodAndType(ExpenseType.GASOLINE, date2, date1)
-            .getOrAwaitValue()
+            .first().toList()
         assertThat(expenses).isEmpty()
 
         expenses =
-            expenseDao.getExpenseByPeriodAndType(ExpenseType.DOCTOR, date2, date1).getOrAwaitValue()
+            expenseDao.getExpenseByPeriodAndType(ExpenseType.DOCTOR, date2, date1).first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[2])
     }
@@ -231,12 +231,12 @@ class ExpenseDaoTest {
     fun getExpenseByOwner_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        var expenses = expenseDao.getExpenseByOwner("MainUser").getOrAwaitValue()
+        var expenses = expenseDao.getExpenseByOwner("MainUser").first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[0])
         assertThat(expenses).contains(expenseList[2])
 
-        expenses = expenseDao.getExpenseByOwner("Me").getOrAwaitValue()
+        expenses = expenseDao.getExpenseByOwner("Me").first().toList()
         assertThat(expenses.size).isEqualTo(3)
         assertThat(expenses).contains(expenseList[1])
         assertThat(expenses).contains(expenseList[3])
@@ -247,7 +247,7 @@ class ExpenseDaoTest {
     fun getExpenseByRecurrence_success_correctDateReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getExpenseByRecurrence(Recurrence.MONTHLY).getOrAwaitValue()
+        val expenses = expenseDao.getExpenseByRecurrence(Recurrence.MONTHLY).first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[2])
     }
@@ -256,7 +256,7 @@ class ExpenseDaoTest {
     fun getExpenseWhenChecked_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getExpenseWhenIsChecked().getOrAwaitValue()
+        val expenses = expenseDao.getExpenseWhenIsChecked().first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[2])
         assertThat(expenses).contains(expenseList[3])
@@ -266,12 +266,12 @@ class ExpenseDaoTest {
     fun getExpenseByPeriodWhenIsChecked_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        var expenses = expenseDao.getExpenseByPeriodWhenIsChecked(date3, date1).getOrAwaitValue()
+        var expenses = expenseDao.getExpenseByPeriodWhenIsChecked(date3, date1).first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[2])
         assertThat(expenses).contains(expenseList[3])
 
-        expenses = expenseDao.getExpenseByPeriodWhenIsChecked(date2, date1).getOrAwaitValue()
+        expenses = expenseDao.getExpenseByPeriodWhenIsChecked(date2, date1).first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[2])
     }
@@ -280,7 +280,7 @@ class ExpenseDaoTest {
     fun getExpenseIfNeedPaidBack_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getExpenseIfNeedPaidBack().getOrAwaitValue()
+        val expenses = expenseDao.getExpenseIfNeedPaidBack().first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[2])
         assertThat(expenses).doesNotContain(expenseList[4])
@@ -290,7 +290,7 @@ class ExpenseDaoTest {
     fun getExpensePaidBack_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getExpensePaidBack().getOrAwaitValue()
+        val expenses = expenseDao.getExpensePaidBack().first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[4])
         assertThat(expenses).doesNotContain(expenseList[2])
@@ -300,7 +300,7 @@ class ExpenseDaoTest {
     fun getAllIncomes_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getAllIncomes().getOrAwaitValue()
+        val expenses = expenseDao.getAllIncomes().first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).contains(expenseList[2])
         assertThat(expenses).contains(expenseList[4])
@@ -310,7 +310,7 @@ class ExpenseDaoTest {
     fun getIncomeByPeriod_success_correctDataReturned() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        val expenses = expenseDao.getIncomeByPeriod(date2, date1).getOrAwaitValue()
+        val expenses = expenseDao.getIncomeByPeriod(date2, date1).first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[2])
         assertThat(expenses).doesNotContain(expenseList[4])
@@ -320,12 +320,12 @@ class ExpenseDaoTest {
     fun deleteExpenseById_success_correctDataDeleted() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        var expenses = expenseDao.getAllExpenses().getOrAwaitValue()
+        var expenses = expenseDao.getAllExpenses().first().toList()
         assertThat(expenses.size).isEqualTo(5)
 
         expenseDao.deleteExpenseById(1)
 
-        expenses = expenseDao.getAllExpenses().getOrAwaitValue()
+        expenses = expenseDao.getAllExpenses().first().toList()
         assertThat(expenses.size).isEqualTo(4)
         assertThat(expenses).doesNotContain(expenseList[0])
     }
@@ -334,12 +334,12 @@ class ExpenseDaoTest {
     fun deleteExpenseByAccountId_success_correctDataDeleted() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        var expenses = expenseDao.getAllExpenses().getOrAwaitValue()
+        var expenses = expenseDao.getAllExpenses().first().toList()
         assertThat(expenses.size).isEqualTo(5)
 
         expenseDao.deleteExpenseByAccountId(1)
 
-        expenses = expenseDao.getAllExpenses().getOrAwaitValue()
+        expenses = expenseDao.getAllExpenses().first().toList()
         assertThat(expenses.size).isEqualTo(2)
         assertThat(expenses).doesNotContain(expenseList[0])
         assertThat(expenses).doesNotContain(expenseList[1])
@@ -350,12 +350,12 @@ class ExpenseDaoTest {
     fun deleteExpenseByPeriod_success_correctDataDeleted() = runBlocking {
         expenseDao.insertAllExpenses(expenseList)
 
-        var expenses = expenseDao.getAllExpenses().getOrAwaitValue()
+        var expenses = expenseDao.getAllExpenses().first().toList()
         assertThat(expenses.size).isEqualTo(5)
 
         expenseDao.deleteExpenseByPeriod(date3, date2)
 
-        expenses = expenseDao.getAllExpenses().getOrAwaitValue()
+        expenses = expenseDao.getAllExpenses().first().toList()
         assertThat(expenses.size).isEqualTo(1)
         assertThat(expenses).contains(expenseList[0])
         assertThat(expenses).doesNotContain(expenseList[1])

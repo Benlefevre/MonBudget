@@ -6,8 +6,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.benoitlefevre.monbudget.database.db.BudgetDatabase
 import com.benoitlefevre.monbudget.database.models.Account
-import com.benoitlefevre.monbudget.getOrAwaitValue
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -49,7 +49,7 @@ class AccountDaoTest {
         accountDao.insertAccount(account1)
         accountDao.insertAccount(account2)
 
-        val accounts = budgetDb.accountDao().getAllAccounts().getOrAwaitValue()
+        val accounts = budgetDb.accountDao().getAllAccounts().first().toList()
         assertThat(accounts).contains(account1)
         assertThat(accounts).contains(account2)
     }
@@ -62,7 +62,7 @@ class AccountDaoTest {
         accountDao.insertAccount(account1)
         accountDao.insertAccount(account2)
 
-        val account = budgetDb.accountDao().getAccountById(1).getOrAwaitValue()
+        val account = budgetDb.accountDao().getAccountById(1).first()
         assertThat(account).isEqualTo(account1)
         assertThat(account).isNotEqualTo(account2)
     }
@@ -74,7 +74,7 @@ class AccountDaoTest {
 
         accountDao.insertAccount(account1)
 
-        val account = budgetDb.accountDao().getAccountByName("test").getOrAwaitValue()
+        val account = budgetDb.accountDao().getAccountByName("test").first()
         assertThat(account).isEqualTo(account1)
         assertThat(account).isNotEqualTo(account2)
     }
@@ -87,7 +87,7 @@ class AccountDaoTest {
         accountDao.insertAccount(account1)
         accountDao.insertAccount(currentAccount)
 
-        val account = budgetDb.accountDao().getCurrentAccount().getOrAwaitValue()
+        val account = budgetDb.accountDao().getCurrentAccount().first()
         assertThat(account).isEqualTo(currentAccount)
         assertThat(account).isNotEqualTo(account1)
     }
@@ -100,14 +100,14 @@ class AccountDaoTest {
         accountDao.insertAccount(account1)
         accountDao.insertAccount(currentAccount)
 
-        var accounts = budgetDb.accountDao().getAllAccounts().getOrAwaitValue()
+        var accounts = budgetDb.accountDao().getAllAccounts().first().toList()
         assertThat(accounts.size).isEqualTo(2)
         assertThat(accounts).contains(currentAccount)
         assertThat(accounts).contains(account1)
 
         accountDao.deleteAccount(1)
 
-        accounts = budgetDb.accountDao().getAllAccounts().getOrAwaitValue()
+        accounts = budgetDb.accountDao().getAllAccounts().first().toList()
         assertThat(accounts.size).isEqualTo(1)
         assertThat(accounts).doesNotContain(currentAccount)
     }
