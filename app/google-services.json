@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1043208590477",
+    "project_id": "monbudget-d5361",
+    "storage_bucket": "monbudget-d5361.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043208590477:android:9f0d70c6ec623b760ebec4",
+        "android_client_info": {
+          "package_name": "com.benoitlefevre.monbudget"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1043208590477-ilpfnpvd6c118grmicr9epgbb82bge0h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.benoitlefevre.monbudget",
+            "certificate_hash": "2ee0b3fd4705add462824a4abccc3949d9184c03"
+          }
+        },
+        {
+          "client_id": "1043208590477-p2694dlmclt0dfnv502krf4d75gqcvqu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWsT3nO61vivMxajSryCk8oUHPtabBcWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1043208590477-p2694dlmclt0dfnv502krf4d75gqcvqu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

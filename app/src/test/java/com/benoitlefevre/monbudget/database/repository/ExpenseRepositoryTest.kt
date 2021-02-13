@@ -55,7 +55,7 @@ class ExpenseRepositoryTest {
     @Test
     fun getExpenseById() = runBlocking {
         every { expenseDao.getExpenseById(any()) } returns flowOf(expenses[0])
-        val result = expenseDao.getExpenseById(1).first()
+        val result = expenseRepository.getExpenseById(1).first()
         verify { expenseDao.getExpenseById(1) }
         assertThat(result).isEqualTo(expenses[0])
     }
